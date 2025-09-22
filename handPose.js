@@ -66,14 +66,14 @@ function draw() {
       let pointB = handB.keypoints[fingerTips[j]];
       stroke(0, 255, 255);
       strokeWeight(3);
-      line(width - pointA.x, pointA.y, width - pointB.x, pointB.y);
+      noiseLine(width - pointA.x, pointA.y, width - pointB.x, pointB.y);
     }
   } else {
     // translate(0, 0);
     background(0);
     fill(255);
     textAlign(CENTER, CENTER);
-    text("Please show two hands", width / 2, height / 2);
+    text("Please show two hands!", width / 2, height / 2);
     scale(-1, 1);
   }
 }
@@ -82,4 +82,23 @@ function draw() {
 function gotHands(results) {
   // save the output to the hands variable
   hands = results;
+}
+
+//Inspiration taken from Lecture 1: Generative Artists
+function noiseLine(x1, y1, x2, y2) {
+  let steps = 50;
+  noFill();
+  stroke(0, 255, 255);
+  strokeWeight(3);
+
+  beginShape();
+  for (let i = 0; i <= steps; i++) {
+    let t = i / steps;
+    let x = lerp(x1, x2, t);
+    let y = lerp(y1, y2, t);
+
+    let offset = noise(x * 0.1, y * 0.1, frameCount * 0.02) * 40 - 20;
+    vertex(x, y + offset);
+  }
+  endShape();
 }
