@@ -24,34 +24,57 @@ function setup() {
 
 function draw() {
   // Draw the webcam video
+  let fingerTips = [4, 8, 12, 16, 20];
+  //The following 5 lines of code were provided by Evelline Miyamoto
+  push();
   translate(width, 0);
   scale(-1, 1);
-
   image(video, 0, 0, width, height);
+  pop();
 
   // Draw the skeletal connections
+  // for (let i = 0; i < hands.length; i++) {
+  //   let hand = hands[i];
+  //   for (let j = 0; j < connections.length; j++) {
+  //     let pointAIndex = connections[j][0];
+  //     let pointBIndex = connections[j][1];
+  //     let pointA = hand.keypoints[pointAIndex];
+  //     let pointB = hand.keypoints[pointBIndex];
+  //     stroke(255, 0, 0);
+  //     strokeWeight(2);
+  //     line(pointA.x, pointA.y, pointB.x, pointB.y);
+  //   }
+  // }
+
   for (let i = 0; i < hands.length; i++) {
     let hand = hands[i];
-    for (let j = 0; j < connections.length; j++) {
-      let pointAIndex = connections[j][0];
-      let pointBIndex = connections[j][1];
-      let pointA = hand.keypoints[pointAIndex];
-      let pointB = hand.keypoints[pointBIndex];
-      stroke(255, 0, 0);
-      strokeWeight(2);
-      line(pointA.x, pointA.y, pointB.x, pointB.y);
+
+    for (let j = 0; j < fingerTips.length; j++) {
+      let keypoint = hand.keypoints[fingerTips[j]];
+      fill(0, 255, 0);
+      noStroke();
+      circle(width - keypoint.x, keypoint.y, 10);
     }
   }
 
-  // Draw all the tracked hand points
-  for (let i = 0; i < hands.length; i++) {
-    let hand = hands[i];
-    for (let j = 0; j < hand.keypoints.length; j++) {
-      let keypoint = hand.keypoints[j];
-      fill(0, 255, 0);
-      noStroke();
-      circle(keypoint.x, keypoint.y, 10);
+  if (hands.length === 2) {
+    let handA = hands[0];
+    let handB = hands[1];
+
+    for (let j = 0; j < fingerTips.length; j++) {
+      let pointA = handA.keypoints[fingerTips[j]];
+      let pointB = handB.keypoints[fingerTips[j]];
+      stroke(0, 255, 255);
+      strokeWeight(3);
+      line(width - pointA.x, pointA.y, width - pointB.x, pointB.y);
     }
+  } else {
+    // translate(0, 0);
+    background(0);
+    fill(255);
+    textAlign(CENTER, CENTER);
+    text("Please show two hands", width / 2, height / 2);
+    scale(-1, 1);
   }
 }
 
