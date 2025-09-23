@@ -49,6 +49,7 @@ function draw() {
 	for (let i = 0; i < hands.length; i++) {
 		let hand = hands[i];
 
+		//  The following 5 lines of code was taken from ChatGPT 2025-09-23: https://chatgpt.com/share/68d2f068-c8c0-800d-b0c8-f5189dfd007c
 		if (hand.handedness === "Left") {
 			fill(0, 0, 255);
 		} else if (hand.handedness === "Right") {
