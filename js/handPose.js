@@ -50,11 +50,13 @@ function draw() {
 		let hand = hands[i];
 
 		//  The following 5 lines of code was taken from ChatGPT 2025-09-23: https://chatgpt.com/share/68d2f068-c8c0-800d-b0c8-f5189dfd007c
-		if (hand.handedness === "Left") {
-			fill(0, 0, 255);
-		} else if (hand.handedness === "Right") {
-			fill(255, 0, 0);
-		}
+		// if (hand.handedness === "Left") {
+		// 	fill(0, 0, 255);
+		// } else if (hand.handedness === "Right") {
+		// 	fill(255, 0, 0);
+		// }
+		// Shorthand for if-else statement. If hand is left, fill 0,0,255 else fill 255,0,0
+		fill(hand.handedness === "Left" ? [0, 0, 255] : [255, 0, 0]);
 
 		for (let j = 0; j < fingerTips.length; j++) {
 			let keypoint = hand.keypoints[fingerTips[j]];
