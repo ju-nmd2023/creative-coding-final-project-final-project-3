@@ -80,7 +80,7 @@ function noiseLine(x1, y1, x2, y2, isRightHand) {
 	endShape();
 }
 
-// * getRandomValue and drawLayers is for drawMolnar
+// * getRandomValue and drawLayers is for drawMolnar and was taken from portfolio variation molnar
 function getRandomValue(pos, variance) {
 	return pos + map(Math.random(), 0, 1, -variance, variance);
 }
@@ -119,6 +119,7 @@ function drawLayers(x, y, size, layers) {
 	}
 }
 
+// The following 4 lines of code was taken from ChatGPT 2025-10-01: https://chatgpt.com/share/68dd1597-dddc-800d-bda2-79c3a17af677
 function drawMolnar(x, y, size, layers) {
 	strokeWeight(1);
 	stroke(random(255), random(255), random(255));
@@ -147,8 +148,7 @@ function drawWebcamVideo() {
 			let keypoint = hand.keypoints[fingerTips[j]];
 			noStroke();
 
-			// // * Draw fingertip circles
-			// circle(width - keypoint.x, keypoint.y, 10);
+			// * Draw fingertip circles/molnar
 			drawMolnar(width - keypoint.x, keypoint.y, 30, 10);
 		}
 	}
