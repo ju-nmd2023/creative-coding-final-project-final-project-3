@@ -1,19 +1,19 @@
 html,
 body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  justify-content: center; /* centers horizontally */
-  align-items: center; /* centers vertically */
-  background: black; /* optional */
+	height: 100%;
+	margin: 0;
+	display: flex;
+	justify-content: center; /* centers horizontally */
+	align-items: center; /* centers vertically */
+	background: black; /* optional */
 }
 
 h1,
 h2 {
-  color: white;
-  margin-right: 50px;
-  font-family: Arial, Helvetica, sans-serif;
+	color: black;
+	margin-right: 50px;
+	font-family: Arial, Helvetica, sans-serif;
 }
 canvas {
-  display: block;
+	display: block;
 }
