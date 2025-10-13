@@ -12,6 +12,7 @@ h1,
 h2 {
   color: white;
   margin-right: 50px;
+  font-family: Arial, Helvetica, sans-serif;
 }
 canvas {
   display: block;

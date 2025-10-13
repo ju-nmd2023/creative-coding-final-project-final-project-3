@@ -27,7 +27,7 @@ function setup() {
   // * Get the skeletal connection information
   connections = handPose.getConnections();
   // * Framerate for drawMolnar
-  // frameRate(10);
+  frameRate(60);
 }
 
 // * Callback function for when handPose outputs data
@@ -38,7 +38,7 @@ function gotHands(results) {
 
 // Inspiration taken from Lecture 1: Generative Artists
 // the following word "isRightHand" was taken from ChatGPT 2025-09-23: https://chatgpt.com/share/68d2af4b-1e68-800d-b03b-515fe2884092
-function noiseLine(x1, y1, x2, y2, isRightHand) {
+function noiseLine(x1, y1, x2, y2) {
   let steps = 50;
   noFill();
   strokeWeight(3);
