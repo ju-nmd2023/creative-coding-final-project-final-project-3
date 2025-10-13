@@ -49,7 +49,7 @@ function setup() {
 	}
 }
 
-// the following 7 lines of code is a combination of help from teacher, Bassima Basma Ghassan, and ChatGPT 13-10-2025: https://chatgpt.com/share/68eca32d-7480-800d-9944-2fb8d9f18c70
+//Next 7 lines of code were through the help of Bassima Basma Ghassan 13/10/2025
 function mousePressed() {
 	if (!toneStarted) {
 		Tone.start();
@@ -64,7 +64,7 @@ function gotHands(results) {
 	hands = results;
 }
 
-//the following 17 lines of code is a combination of help from teacher, Bassima Basma Ghassan, and ChatGPT 13-10-2025: https://chatgpt.com/share/68eca32d-7480-800d-9944-2fb8d9f18c70
+//Next 17 lines of code are taken from: https://chatgpt.com/share/68eca32d-7480-800d-9944-2fb8d9f18c70 13/10/2025
 function handSoundController() {
 	for (let hand of hands) {
 		let indexTip = hand.keypoints[8]; // Index finger tip
@@ -97,7 +97,7 @@ function noiseLine(x1, y1, x2, y2) {
 	// Distance between fingertips
 	let distBetween = dist(x1, y1, x2, y2);
 
-	//the following 1 line of code was taken from: https://p5js.org/examples/calculating-values-map/
+	//https://p5js.org/examples/calculating-values-map/
 	let noiseAmp = map(distBetween, 0, 400, 10, 100, true);
 
 	stroke(255);
@@ -199,6 +199,8 @@ function drawWebcamVideo() {
 			noiseLine(width - pointA.x, pointA.y, width - pointB.x, pointB.y);
 		}
 	} else {
+		// translate(0, 0);
+		// background(0);
 		fill(255);
 		textAlign(CENTER, CENTER);
 		text("Please show two hands!", width / 2, height / 2);
