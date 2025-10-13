@@ -10,8 +10,14 @@ body {
 
 h1,
 h2 {
+<<<<<<< HEAD
 	color: #ffffff;
 	margin-right: 50px;
+=======
+  color: white;
+  margin-right: 50px;
+  font-family: Arial, Helvetica, sans-serif;
+>>>>>>> refs/remotes/origin/main
 }
 canvas {
 	display: block;
