@@ -1,3 +1,30 @@
+// --- NEW: audio globals ---
+let osc,
+  env,
+  audioOn = false;
+let prevTip = null;
+let smoothedFreq = 220; // start near A3
+let smoothedAmp = 0.0;
+
+// --- NEW: user gesture to unlock audio ---
+function mousePressed() {
+  initAudio();
+}
+function touchStarted() {
+  initAudio();
+}
+function initAudio() {
+  if (audioOn) return;
+  try {
+    getAudioContext().resume();
+  } catch (e) {}
+  osc = new p5.Oscillator("sine"); // try 'triangle' for a softer tone
+  env = new p5.Envelope(0.001, 1.0, 0.08, 0.2); // quick attack, short release
+  osc.start();
+  osc.amp(0); // start silent
+  audioOn = true;
+}
+
 //Example and inspiration taken from: https://editor.p5js.org/ml5/sketches/fnboooD-K
 
 // * GLOBAL VARIALBES
@@ -5,11 +32,6 @@ let hands = [];
 let handPose;
 let video;
 let connections;
-
-//Next 3 lines taken from: https://chatgpt.com/share/68eca32d-7480-800d-9944-2fb8d9f18c70 13/10/2025
-let leftSynth;
-let rightSynth;
-let toneStarted = false;
 
 // * VARIABLES FOR drawMolnar
 const size = 100;
@@ -32,30 +54,7 @@ function setup() {
   // * Get the skeletal connection information
   connections = handPose.getConnections();
   // * Framerate for drawMolnar
-  // frameRate(10);
-
-  //Next 9 lines of code were through the help of Bassima Basma Ghassan 13/10/2025
-  // * Setup synths
-  if (typeof Tone !== "undefined") {
-    leftSynth = new Tone.MonoSynth({
-      oscillator: { type: "sine" },
-      envelope: { attack: 0.1, release: 0.5 },
-    }).toDestination();
-
-    rightSynth = new Tone.MonoSynth({
-      oscillator: { type: "square" },
-      envelope: { attack: 0.05, release: 0.3 },
-    }).toDestination();
-  }
-}
-
-//Next 7 lines of code were through the help of Bassima Basma Ghassan 13/10/2025
-function mousePressed() {
-  if (!toneStarted) {
-    Tone.start();
-    toneStarted = true;
-    console.log("Tone.js started");
-  }
+  frameRate(60);
 }
 
 // * Callback function for when handPose outputs data
@@ -64,31 +63,8 @@ function gotHands(results) {
   hands = results;
 }
 
-//Next 17 lines of code are taken from: https://chatgpt.com/share/68eca32d-7480-800d-9944-2fb8d9f18c70 13/10/2025
-function handSoundController() {
-  for (let hand of hands) {
-    let indexTip = hand.keypoints[8]; // Index finger tip
-    let handX = width - indexTip.x;
-    let handY = indexTip.y;
-
-    // * Map position to MIDI note and volume
-    let midiNote = map(handX, 0, width, 40, 80); // width pitch range)
-    let note = Tone.Frequency(midiNote, "midi").toNote();
-    let volume = map(handY, 0, height, -12, 0); // height volume range
-
-    // * Determine which synth to use based on hand
-
-    if (hand.handedness === "left") {
-      leftSynth.triggerAttackRelease(note, "8n");
-      leftSynth.volume.value = volume;
-    } else {
-      rightSynth.triggerAttackRelease(note, "8n");
-      rightSynth.volume.value = volume;
-    }
-  }
-}
-
 // Inspiration taken from Lecture 1: Generative Artists
+// the following word "isRightHand" was taken from ChatGPT 2025-09-23: https://chatgpt.com/share/68d2af4b-1e68-800d-b03b-515fe2884092
 function noiseLine(x1, y1, x2, y2) {
   let steps = 50;
   noFill();
@@ -176,7 +152,7 @@ function drawWebcamVideo() {
     let hand = hands[i];
 
     //  The following 1 lines of code was taken from ChatGPT 2025-09-23: https://chatgpt.com/share/68d2f068-c8c0-800d-b0c8-f5189dfd007c
-    fill(hand.handedness === "left" ? [0, 0, 255] : [255, 0, 0]); // Shorthand for if-else statement.
+    fill(hand.handedness === "Left" ? [0, 0, 255] : [255, 0, 0]); // Shorthand for if-else statement.
 
     for (let j = 0; j < fingerTips.length; j++) {
       let keypoint = hand.keypoints[fingerTips[j]];
@@ -184,6 +160,51 @@ function drawWebcamVideo() {
 
       // * Draw fingertip circles/molnar
       drawMolnar(width - keypoint.x, keypoint.y, 30, 10);
+    }
+    if (audioOn) {
+      let moving = false;
+
+      if (hands.length > 0 && hands[0].keypoints && hands[0].keypoints[8]) {
+        // mirror-x like your visuals
+        const tip = {
+          x: width - hands[0].keypoints[8].x,
+          y: hands[0].keypoints[8].y,
+        };
+
+        // Movement magnitude to gate sound
+        if (prevTip) {
+          const dx = tip.x - prevTip.x;
+          const dy = tip.y - prevTip.y;
+          const speed = Math.hypot(dx, dy);
+
+          // Map X -> frequency (MIDI-ish 60–84 ≈ 261–1046 Hz)
+          const freq = map(tip.x, 0, width, 200, 1200, true);
+          // Map Y -> amplitude (top loud, bottom quiet)
+          const amp = map(tip.y, 0, height, 0.9, 0.05, true);
+
+          // Smooth to avoid jitter (one-pole low-pass)
+          smoothedFreq = lerp(smoothedFreq, freq, 0.25);
+          smoothedAmp = lerp(smoothedAmp, amp, 0.25);
+
+          osc.freq(smoothedFreq);
+
+          // Only “speak” when moving a bit; tweak threshold to taste
+          const movingThreshold = 1.5;
+          moving = speed > movingThreshold;
+
+          if (moving) {
+            // shape amplitude with envelope for clarity on movement
+            osc.amp(smoothedAmp, 0.02); // quick ramp
+          } else {
+            osc.amp(0.0, 0.08); // gentle fade when still
+          }
+        }
+        prevTip = tip;
+      } else {
+        // No hand: fade out
+        osc && osc.amp(0.0, 0.1);
+        prevTip = null;
+      }
     }
   }
 
@@ -200,7 +221,7 @@ function drawWebcamVideo() {
     }
   } else {
     // translate(0, 0);
-    // background(0);
+    background(0);
     fill(255);
     textAlign(CENTER, CENTER);
     text("Please show two hands!", width / 2, height / 2);
@@ -210,5 +231,4 @@ function drawWebcamVideo() {
 
 function draw() {
   drawWebcamVideo();
-  handSoundController();
 }
